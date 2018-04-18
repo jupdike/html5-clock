@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title>
+      Convert Sunset/Sunrise times
+    </title>
+    <script src="./jquery-1.12.3.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Copy the fixed-width text from the results of Form A here, starting on the line with 01:</p>
+    <p><a href="http://aa.usno.navy.mil/data/docs/RS_OneYear.php">http://aa.usno.navy.mil/data/docs/RS_OneYear.php</a></p>
+    <textarea style="width: 60rem; height: 25rem; font-family: 'Courier New'" id="in-table"></textarea>
+    <p><button id="convert-button">Convert</button> -- Output:</p>
+    <textarea id="out-json"></textarea>
+  </body>
+  <script>
+    $('#convert-button').click(function() {
+      var all = {rise:{}, set:{}};
+      var lines = $('#in-table').val().split('\n');
+
+      lines.forEach(function(line) {
+        var day = +(line.slice(0,2));
+        for (var mo = 1; mo <= 12; mo++) {
+          var ix = 11*(mo-1) + 4;
+          var rise = line.slice(ix+0, ix+4);
+          if (rise === '    ') {
+            rise = -1;
+          }
+          var set  = line.slice(ix+5, ix+9);
+          if (set === '    ') {
+            set = -1;
+          }
+          if (rise === -1 || set === -1) {
+            return;
+          }
+          var key = mo + '-' + day;
+          all.rise[key] = +(rise);
+          all.set[key] = +(set);
+        }
+      });
+
+      $('#out-json').val(JSON.stringify(all));
+    });
+  </script>
+</html>
