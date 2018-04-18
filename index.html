@@ -32,15 +32,21 @@ font-family: 'Orbitron', sans-serif;
         background-color: black;
         color: red;
       }
-      #colon.other {
+      svg path {
+        fill: red;
+      }
+      #colon.other, .darker {
         color: #A00;
       }
       body.daytime {
         background-color: white;
         color: black;
       }
-      .daytime #colon.other {
+      .daytime #colon.other, .daytime .darker {
         color: #888;
+      }
+      .daytime svg path {
+        fill: black;
       }
       .total {
         /*font-family: -apple-system, Helvetica Neue, Verdana, Geneva, Tahoma, sans-serif;*/
@@ -53,30 +59,58 @@ font-family: 'Orbitron', sans-serif;
       }
       .sizer {
         font-size: 2rem;
+        display: none;
       }
       #time {
-        font-size: 8rem;
-      }
-      #temp {
-        font-size: 2.5rem;
+        font-size: 9rem;
+        margin-top: -1.6rem;
+        margin-bottom: -1rem;
       }
       #ampm {
         font-size: 2rem;
+        display: none;
       }
       #day {
-        padding-top: 1.5rem;
+        padding-top: 0rem;
+        font-size: 2rem;
+      }
+      .smaller {
+        font-size: 66%;
+      }
+      #temp {
+        padding-top: 1.2rem;
         font-size: 2.5rem;
+      }
+      .temp-left {
+        display: inline-block;
+        width: 10rem;
+        text-align: right;
+        padding-right: 1rem;
+      }
+      .temp-right {
+        display: inline-block;
+        width: 10rem;
+        text-align: left;
+        padding-left: 1rem;
+      }
+      .glyph {
+        /*font-size: 4.5rem;*/
+        height: 3.8rem;
+        width: auto;
       }
     </style>
   </head>
   <body>
     <div class="total">
-      <div id="day"></div>
-      <div id="time"></div>
       <div id="temp"></div>
+      <div id="time"></div>
+      <div id="day"></div>
     </div>
   </body>
   <script>
+    var svgs = {'weather-cloudy': '<svg class="glyph" width="100%" height="100%" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;"><rect x="28.885" y="25.788" width="19.426" height="19.426" style="fill:none;stroke:#000;stroke-opacity:0.00784314;stroke-width:0.05px;"/><path d="M11.222,30.587c1.321,-6.702 7.207,-11.733 14.278,-11.733c5.614,0 10.49,3.186 12.918,7.848c5.847,0.621 10.393,5.575 10.393,11.578c0,6.429 -5.226,11.655 -11.656,11.655l-25.253,0c-5.361,0 -9.713,-4.351 -9.713,-9.713c0,-5.128 3.982,-9.285 9.033,-9.635Zm0.68,15.463l25.253,0c4.293,0 7.771,-3.477 7.771,-7.77c0,-4.294 -3.478,-7.771 -7.771,-7.771l-1.379,0c-1.282,-4.487 -5.381,-7.77 -10.276,-7.77c-5.905,0 -10.684,4.779 -10.684,10.684l0,0.971l-2.914,0c-3.225,0 -5.828,2.603 -5.828,5.828c0,3.225 2.603,5.828 5.828,5.828Z" style="fill-rule:nonzero;"/></svg>',
+
+    'weather-sunny': '<svg class="glyph" width="100%" height="100%" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;"><rect x="28.885" y="25.788" width="19.426" height="19.426" style="fill:none;stroke:#000;stroke-opacity:0.00784314;stroke-width:0.05px;"/><rect x="-1" y="-1" width="21.739" height="21.739" style="fill:none;stroke:#000;stroke-opacity:0.00784314;stroke-width:0.05px;"/><path d="M27.261,48.891l-4.348,0l0,-6.413l4.348,0l0,6.413Zm-13.565,-9.326l-3.913,3.892l-3.066,-3.066l3.892,-3.891l3.087,3.065Zm29.761,0.826l-3.066,3.066l-3.891,-3.892l3.065,-3.065l3.892,3.891Zm-18.37,-2.261c-7.196,0 -13.044,-5.847 -13.044,-13.043c0,-7.196 5.848,-13.044 13.044,-13.044c7.196,0 13.043,5.848 13.043,13.044c0,7.196 -5.847,13.043 -13.043,13.043Zm0,-22.772c5.322,0 9.642,4.32 9.642,9.642c0,5.322 -4.32,9.642 -9.642,9.642c-5.322,0 -9.642,-4.32 -9.642,-9.642c0,-5.322 4.32,-9.642 9.642,-9.642Zm-17.391,11.903l-6.522,0l0,-4.348l6.522,0l0,4.348Zm41.304,0l-6.522,0l0,-4.348l6.522,0l0,4.348Zm-42.283,-17.478l3.066,-3.066l3.891,3.913l-3.065,3.066l-3.892,-3.913Zm29.761,0.826l3.892,-3.913l3.065,3.065l-3.913,3.891l-3.044,-3.043l0,0Zm-9.217,-2.913l-4.348,0l0,-6.413l4.348,0l0,6.413Z"/></svg>'};
     //http://aa.usno.navy.mil/rstt/onedaytable?ID=AA&year=2018&month=4&day=17&state=CA&place=Northridge
     // http://aa.usno.navy.mil/cgi-bin/aa_rstablew.pl?ID=AA&year=2018&task=0&state=CA&place=Northridge
     // Northridge, CA 2018
@@ -92,7 +126,7 @@ font-family: 'Orbitron', sans-serif;
     }
     function spacePad(x) {
       if ((x+'').length < 2) {
-        return '&ensp;' + (''+x);
+        return ' ' + x;  //'&ensp;' + (''+x);
       }
       return x;
     }
@@ -116,7 +150,7 @@ font-family: 'Orbitron', sans-serif;
       var h = d.getHours();
       var colon = other ? "<span id='colon'>:</span>" : "<span id='colon' class='other'>:</span>";
       var s = '<span class="sizer">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>' + spacePad(toTwelve(h)) + colon + pad(d.getMinutes()) + toAMPM(h);
-      var t = ("Sun Mon Tue Wed Thu Fri Sat".split(' '))[d.getDay()] + ' ' + ("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(' '))[d.getMonth()] + ' ' + d.getDate();
+      var t = ("Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(' '))[d.getDay()] + ', ' + ("January February March April May June July August September October November December".split(' '))[d.getMonth()] + ' ' + d.getDate();
       document.getElementById('time').innerHTML = s;
       document.getElementById('day').innerHTML = t;
       window.setTimeout(twicePerSecond, 500);
@@ -149,7 +183,27 @@ font-family: 'Orbitron', sans-serif;
     }
     window.setTimeout(oncePerMinute, 200);
 
-    // TODOx temperature and weather ---------
-    document.getElementById('temp').innerHTML = "00" + "&thinsp;ºF";
+    var switchWeather = true;
+    function everyNSeconds() {
+      // TODOx temperature and weather ---------
+      // curl https://api.weather.gov/points/34.2283,-118.5367/forecast
+      // forwards to
+      // curl https://api.weather.gov/gridpoints/LOX/145,53/forecast
+
+      if (switchWeather) {
+        var svg = svgs['weather-sunny'];
+        var w = {a: 63, b: 0, c: 50, d: 70};
+        document.getElementById('temp').innerHTML = "<div class='temp-left'>"+w.a+"º <span class='darker'>"+w.b+"<span class='smaller'>%</span></span></div>"+svg+"<div class='temp-right darker'>"+w.c+"º "+w.d+"º</div>";
+      } else {
+        var svg = svgs['weather-cloudy'];
+        var w = {a: -1, b: -1, c: 54, d: 78};
+        document.getElementById('temp').innerHTML = "<div class='temp-left smaller'>Tomorrow</div>"+svg+"<div class='temp-right darker'>"+w.c+"º "+w.d+"º</div>";
+      }
+
+      switchWeather = !switchWeather;
+      window.setTimeout(everyNSeconds, 1000*8);
+    }
+    window.setTimeout(everyNSeconds, 200);
+
   </script>
 </html>
