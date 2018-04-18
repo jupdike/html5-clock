@@ -77,6 +77,8 @@ font-family: 'Orbitron', sans-serif;
     </div>
   </body>
   <script>
+    //http://aa.usno.navy.mil/rstt/onedaytable?ID=AA&year=2018&month=4&day=17&state=CA&place=Northridge
+    // http://aa.usno.navy.mil/cgi-bin/aa_rstablew.pl?ID=AA&year=2018&task=0&state=CA&place=Northridge
     // Northridge, CA 2018
     // from here:
     // http://aa.usno.navy.mil/cgi-bin/aa_rstablew.pl?ID=AA&year=2018&task=0&state=CA&place=Northridge
@@ -124,13 +126,23 @@ font-family: 'Orbitron', sans-serif;
     // sunset and sunrise to set night theme or day theme -------
     function oncePerMinute() {
       var d = new Date();
-      //http://aa.usno.navy.mil/rstt/onedaytable?ID=AA&year=2018&month=4&day=17&state=CA&place=Northridge
-      // http://aa.usno.navy.mil/cgi-bin/aa_rstablew.pl?ID=AA&year=2018&task=0&state=CA&place=Northridge
+      var h = d.getHours();
+      var m = d.getMinutes();
+      var hm = h*100 + m;
+
       var dstr = d.toTimeString();
       var isDT = dstr.indexOf('DT)') > -1;
       console.warn((isDT ? 'is' : 'not') + ' daylight savings');
+      var dstOffset = isDT ? 100 : 0;
+
+      var key = (d.getMonth()+1) + '-' + (d.getDate()+1);
+      var rise = tableData.rise[key] + dstOffset;
+      var set = tableData.set[key] + dstOffset;
+      console.warn('rise:', rise, 'set:', set);
+
       $('body').removeClass('daytime');
-      if (true) {
+      var isDayTime = (hm > rise) && (hm < set);
+      if (isDayTime) {
         $('body').addClass('daytime');
       }
       window.setTimeout(oncePerMinute, 1000*60);
