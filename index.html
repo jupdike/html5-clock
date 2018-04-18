@@ -5,8 +5,8 @@
       Clock
     </title>
     <script src="./jquery-1.12.3.min.js"></script>
-    <!--link href="https://fonts.googleapis.com/css?family=Asap|Bree+Serif|Cairo|IBM+Plex+Mono|IBM+Plex+Sans|Noto+Sans|Open+Sans|Orbitron|Play|Rajdhani:700|Signika|Source+Sans+Pro|Work+Sans" rel="stylesheet"-->
-    <link link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans" rel="stylesheet">
+    <!--link href="https://fonts.googleapis.com/css?family=Asap|Audiowide|Bree+Serif|Cairo|IBM+Plex+Mono|IBM+Plex+Sans|Noto+Sans|Open+Sans|Orbitron|Play|Rajdhani:700|Signika|Source+Sans+Pro|Work+Sans" rel="stylesheet"-->
+    <link link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,600" rel="stylesheet">
     <style>
       /*
 font-family: 'Open Sans', sans-serif;
@@ -31,9 +31,6 @@ font-family: 'Orbitron', sans-serif;
       body {
         background-color: black;
         color: red;
-      }
-      svg path {
-        fill: red;
       }
       #colon.other, .darker {
         color: #A00;
@@ -65,6 +62,8 @@ font-family: 'Orbitron', sans-serif;
         font-size: 9rem;
         margin-top: -1.6rem;
         margin-bottom: -1rem;
+        font-weight: 600;
+        /*font-family: 'Audiowide', sans-serif;*/
       }
       #ampm {
         font-size: 2rem;
@@ -82,13 +81,13 @@ font-family: 'Orbitron', sans-serif;
         font-size: 2.5rem;
       }
       .temp-left {
-        display: inline-block;
+        display: inline;
         width: 10rem;
         text-align: right;
         padding-right: 1rem;
       }
       .temp-right {
-        display: inline-block;
+        display: inline;
         width: 10rem;
         text-align: left;
         padding-left: 1rem;
@@ -134,7 +133,7 @@ font-family: 'Orbitron', sans-serif;
       if (h >= 12) {
         return '<span id="ampm">&nbsp;PM</span>';
       }
-      return '<span id="ampm">&bnsp;AM</span>';
+      return '<span id="ampm">&nbsp;AM</span>';
     }
     function toTwelve(h) {
       h = h % 12;
@@ -153,12 +152,14 @@ font-family: 'Orbitron', sans-serif;
       var t = ("Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(' '))[d.getDay()] + ', ' + ("January February March April May June July August September October November December".split(' '))[d.getMonth()] + ' ' + d.getDate();
       document.getElementById('time').innerHTML = s;
       document.getElementById('day').innerHTML = t;
+      
       window.setTimeout(twicePerSecond, 500);
     }
     window.setTimeout(twicePerSecond, 500);
 
+    var isDayTime = false;
     // sunset and sunrise to set night theme or day theme -------
-    function oncePerMinute() {
+    function oncePerMinute() { // actually every ten seconds
       var d = new Date();
       var h = d.getHours();
       var m = d.getMinutes();
@@ -175,11 +176,11 @@ font-family: 'Orbitron', sans-serif;
       console.warn('rise:', rise, 'set:', set);
 
       $('body').removeClass('daytime');
-      var isDayTime = (hm > rise) && (hm < set);
+      isDayTime = (hm > rise) && (hm < set);
       if (isDayTime) {
         $('body').addClass('daytime');
       }
-      window.setTimeout(oncePerMinute, 1000*60);
+      window.setTimeout(oncePerMinute, 1000*10);
     }
     window.setTimeout(oncePerMinute, 200);
 
@@ -190,18 +191,28 @@ font-family: 'Orbitron', sans-serif;
       // forwards to
       // curl https://api.weather.gov/gridpoints/LOX/145,53/forecast
 
+      // curl https://api.weather.gov/points/34.2283,-118.5367/stations
+      // forwards to
+      // curl https://api.weather.gov/gridpoints/LOX/145,53/stations
+      // returns Van Nuys, Van Nuys Airport --> https://api.weather.gov/stations/KVNY
+      // so
+      // curl https://api.weather.gov/stations/KVNY/observations/current
+      // --> nice Current weather / temperature in Celsius, cloudLayers / amount CLR (clear), etc.
+
       if (switchWeather) {
-        var svg = svgs['weather-sunny'];
+        var stem = isDayTime ? '' : '-red';
+        var svg = '<img class="glyph" src="weather-sunny' + stem + '.svg"/>';
         var w = {a: 63, b: 0, c: 50, d: 70};
-        document.getElementById('temp').innerHTML = "<div class='temp-left'>"+w.a+"º <span class='darker'>"+w.b+"<span class='smaller'>%</span></span></div>"+svg+"<div class='temp-right darker'>"+w.c+"º "+w.d+"º</div>";
+        document.getElementById('temp').innerHTML = "<span class='temp-left'>"+w.a+"º <span class='darker'>"+w.b+"<span class='smaller'>%</span></span></span>"+svg+"<span class='temp-right darker'>"+w.c+"º "+w.d+"º</span>";
       } else {
-        var svg = svgs['weather-cloudy'];
+        var stem = isDayTime ? '' : '-red';
+        var svg = '<img class="glyph" src="weather-cloudy' + stem + '.svg"/>';
         var w = {a: -1, b: -1, c: 54, d: 78};
-        document.getElementById('temp').innerHTML = "<div class='temp-left smaller'>Tomorrow</div>"+svg+"<div class='temp-right darker'>"+w.c+"º "+w.d+"º</div>";
+        document.getElementById('temp').innerHTML = "<span class='temp-left smaller'>Tomorrow</span>"+svg+"<span class='temp-right darker'>"+w.c+"º "+w.d+"º</span>";
       }
 
       switchWeather = !switchWeather;
-      window.setTimeout(everyNSeconds, 1000*8);
+      window.setTimeout(everyNSeconds, 1000*6);
     }
     window.setTimeout(everyNSeconds, 200);
 
