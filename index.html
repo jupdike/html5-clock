@@ -167,13 +167,13 @@ font-family: 'Orbitron', sans-serif;
 
       var dstr = d.toTimeString();
       var isDT = dstr.indexOf('DT)') > -1;
-      console.warn((isDT ? 'is' : 'not') + ' daylight savings');
+      //console.warn((isDT ? 'is' : 'not') + ' daylight savings');
       var dstOffset = isDT ? 100 : 0;
 
       var key = (d.getMonth()+1) + '-' + (d.getDate()+1);
       var rise = tableData.rise[key] + dstOffset;
       var set = tableData.set[key] + dstOffset;
-      console.warn('rise:', rise, 'set:', set);
+      //console.warn('rise:', rise, 'set:', set);
 
       $('body').removeClass('daytime');
       isDayTime = (hm > rise) && (hm < set);
@@ -183,6 +183,37 @@ font-family: 'Orbitron', sans-serif;
       window.setTimeout(oncePerMinute, 1000*10);
     }
     window.setTimeout(oncePerMinute, 200);
+
+    function celsiusToFahrenheit(cels) {
+      return cels * 9.0 / 5.0 + 32.0;
+    }
+    function cleanup(txt) {
+      txt = txt.toLowerCase().replace(/ /g, '-');
+      txt = txt.replace('clear', 'sunny');
+      if (!isDayTime) {
+        txt = txt.replace('sunny', 'night');
+      }
+      return txt;
+    }
+    var wToday = {a: 63, b: 0, c: 50, d: 70, svgURL: null};
+    var wTomorrow = {a: -1, b: -1, c: 54, d: 78, svgURL: null};
+    function everyTenMinutes() {
+      var url = 'https://api.weather.gov/stations/KVNY/observations/current';
+      console.warn('ask for:', url);
+      $.ajax(url).done(function(data) {
+        console.warn('got JSON:', data);
+        if (data && data.properties) {
+          var props = data.properties;
+          if (props.temperature) {
+            wToday.a = Math.round(celsiusToFahrenheit(props.temperature.value));
+          }
+          wToday.svgURL = 'weather-' + cleanup(props.textDescription);
+          console.warn('wToday:', wToday);
+        }
+      });
+      window.setTimeout(everyTenMinutes, 1000*60*10);
+    }
+    window.setTimeout(everyTenMinutes, 200);
 
     var switchWeather = true;
     function everyNSeconds() {
@@ -199,16 +230,15 @@ font-family: 'Orbitron', sans-serif;
       // curl https://api.weather.gov/stations/KVNY/observations/current
       // --> nice Current weather / temperature in Celsius, cloudLayers / amount CLR (clear), etc.
 
+      // a little documentation goes a long way: https://en.wikipedia.org/wiki/METAR#North_American_METAR_codes
       if (switchWeather) {
         var stem = isDayTime ? '' : '-red';
-        var svg = '<img class="glyph" src="weather-sunny' + stem + '.svg"/>';
-        var w = {a: 63, b: 0, c: 50, d: 70};
-        document.getElementById('temp').innerHTML = "<span class='temp-left'>"+w.a+"º <span class='darker'>"+w.b+"<span class='smaller'>%</span></span></span>"+svg+"<span class='temp-right darker'>"+w.c+"º "+w.d+"º</span>";
+        var svg = '<img class="glyph" src="' + (wToday.svgURL || 'weather-sunny') + stem + '.svg"/>';
+        document.getElementById('temp').innerHTML = "<span class='temp-left'>"+wToday.a+"º <span class='darker'>"+wToday.b+"<span class='smaller'>%</span></span></span>"+svg+"<span class='temp-right darker'>"+wToday.c+"º "+wToday.d+"º</span>";
       } else {
         var stem = isDayTime ? '' : '-red';
         var svg = '<img class="glyph" src="weather-cloudy' + stem + '.svg"/>';
-        var w = {a: -1, b: -1, c: 54, d: 78};
-        document.getElementById('temp').innerHTML = "<span class='temp-left smaller'>Tomorrow</span>"+svg+"<span class='temp-right darker'>"+w.c+"º "+w.d+"º</span>";
+        document.getElementById('temp').innerHTML = "<span class='temp-left smaller'>Tomorrow</span>"+svg+"<span class='temp-right darker'>"+wTomorrow.c+"º "+wTomorrow.d+"º</span>";
       }
 
       switchWeather = !switchWeather;
