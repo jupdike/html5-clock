@@ -106,7 +106,6 @@ Heavy Freezing Drizzle Rain
 Rain Freezing Drizzle
 Light Rain Freezing Drizzle
 Heavy Rain Freezing Drizzle
-	
 Freezing Rain Snow
 Light Freezing Rain Snow
 Heavy Freezing Rain Snow
@@ -119,7 +118,6 @@ Heavy Snow Freezing Rain
 Snow Freezing Drizzle
 Light Snow Freezing Drizzle
 Heavy Snow Freezing Drizzle
-	
 Ice Pellets
 Light Ice Pellets
 Heavy Ice Pellets
@@ -133,9 +131,7 @@ Light Small Hail/Snow Pellets
 Heavy small Hail/Snow Pellets
 Showers Hail
 Hail Showers
-	
 Snow Ice Pellets
-	
 Light Rain
 Drizzle
 Light Drizzle
@@ -148,14 +144,12 @@ Light Rain Fog
 Drizzle Fog
 Light Drizzle Fog
 Heavy Drizzle Fog
-	
 Rain
 Heavy Rain
 Rain Fog/Mist
 Heavy Rain Fog/Mist
 Rain Fog
 Heavy Rain Fog
-	
 (w/cloud cover > 60%)
 Rain Showers
 Light Rain Showers
@@ -174,13 +168,11 @@ Light Showers Rain Fog/Mist
 Heavy Showers Rain Fog/Mist
 Showers Rain Fog/Mist
 Showers Rain in Vicinity Fog/Mist
-	
 (w/cloud cover < 60%)
 Showers in Vicinity
 Showers in Vicinity Fog/Mist
 Showers in Vicinity Fog
 Showers in Vicinity Haze
-	
 (w/cloud cover > 75%)
 Thunderstorm
 Thunderstorm Rain
