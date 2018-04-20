@@ -232,7 +232,8 @@ font-family: 'Orbitron', sans-serif;
           if (props.temperature) {
             wToday.currTemp = Math.round(celsiusToFahrenheit(props.temperature.value));
           }
-          wToday.svgURL = 'weather-' + cleanup(props.textDescription, isDayTime);
+          var str = cleanup(props.textDescription, isDayTime).replace('mostly-night', 'night');
+          wToday.svgURL = 'weather-' + str;
           console.warn('wToday:', wToday);
         }
       });
@@ -279,7 +280,8 @@ font-family: 'Orbitron', sans-serif;
             });
             tomorrowFores = tomorrowFores.map(function(x) { return cleanup(x.shortForecast, true); });
             console.warn('forecasts:', tomorrowFores);
-            wTomorrow.svgURL = 'weather-' + tomorrowFores[0];
+            var str = tomorrowFores[0].replace('mostly-night', 'night');
+            wTomorrow.svgURL = 'weather-' + str;
           }
         }
       });
