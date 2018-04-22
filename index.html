@@ -247,7 +247,7 @@ font-family: 'Orbitron', sans-serif;
           var todayTemps = [];
           if (periods) {
             var ix = 0;
-            for (ix = 0; ix < periods.length; ix++) {
+            for (ix = 0; ix < Math.min(2, periods.length); ix++) {
               var period = periods[ix];
               todayTemps.push(period.temperature); // already in Fahrenheit
               if (period.name === 'Tonight') {
