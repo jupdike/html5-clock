@@ -78,7 +78,7 @@ font-family: 'Orbitron', sans-serif;
       }
       #temp {
         padding-top: 1.2rem;
-        font-size: 2.5rem;
+        font-size: 2rem;
       }
       .temp-left {
         display: inline-block;
@@ -221,6 +221,8 @@ font-family: 'Orbitron', sans-serif;
       strToIndex[cleanup(s, true)] = ind;
       ind++;
     });
+    var validStrs = 'clear'.split('clear cloudy mostly-clear mostly-cloudy mostly-sunny night partly cloudy sunny');
+
     console.warn('strToIndex:', strToIndex);
     function everyTenMinutes() {
       var url1 = 'https://api.weather.gov/stations/KVNY/observations/current';
@@ -233,6 +235,9 @@ font-family: 'Orbitron', sans-serif;
             wToday.currTemp = Math.round(celsiusToFahrenheit(props.temperature.value));
           }
           var str = cleanup(props.textDescription, isDayTime).replace('mostly-night', 'night');
+          if (validStrs.filter(function(s) { return s === str; }).length < 1) {
+            str = 'mostly-cloudy'; // hack to avoid showing icon for weather we haven't seen
+          }
           wToday.svgURL = 'weather-' + str;
           console.warn('wToday:', wToday);
         }
@@ -281,6 +286,9 @@ font-family: 'Orbitron', sans-serif;
             tomorrowFores = tomorrowFores.map(function(x) { return cleanup(x.shortForecast, true); });
             console.warn('forecasts:', tomorrowFores);
             var str = tomorrowFores[0].replace('mostly-night', 'night');
+            if (validStrs.filter(function(s) { return s === str; }).length < 1) {
+              str = 'mostly-cloudy'; // hack to avoid showing icon for weather we haven't seen
+            }
             wTomorrow.svgURL = 'weather-' + str;
           }
         }
